@@ -1,6 +1,6 @@
 # Amazonish
 
-![Alt Text](https://media.giphy.com/media/l2QE73aOjxO1fkd6E/giphy.gif)
+![Alt Text](https://media.giphy.com/media/zWyv9xtsEfXQQ/giphy.gif)
 ## Overview
 
 Amazonish is a backend developer project that mimics the functionality of an e-commerce website, specifically Amazon.
