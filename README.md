@@ -1,6 +1,6 @@
 # Amazonish
 
-![Alt Text](GIF LINK)
+![Alt Text](https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.theverge.com%2F2017%2F10%2F27%2F16552614%2Famazon-popularity-user-survey-prime-echo-trust&psig=AOvVaw1FPab22VDD0LbqtcuiLk9k&ust=1607733594749000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCNC4hsTYxO0CFQAAAAAdAAAAABAD)
 
 ## Overview
 
