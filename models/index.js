@@ -1,37 +1,48 @@
-'use strict';
+const dbConfig = require("../config/db.config.js");
 
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
-const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.json')[env];
-const db = {};
+const Sequelize = require("sequelize");
+const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
+	host: dbConfig.HOST,
+	dialect: dbConfig.dialect,
+	operatorsAliases: 0,
 
-let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
-}
-
-fs
-  .readdirSync(__dirname)
-  .filter(file => {
-    return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
-  })
-  .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
-  });
-
-Object.keys(db).forEach(modelName => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
+	pool: {
+		max: dbConfig.pool.max,
+		min: dbConfig.pool.min,
+		acquire: dbConfig.pool.acquire,
+		idle: dbConfig.pool.idle,
+	},
 });
 
-db.sequelize = sequelize;
+const db = {};
+
 db.Sequelize = Sequelize;
+db.sequelize = sequelize;
+
+const Product = require("./product")(sequelize, Sequelize);
+const User = require("./user")(sequelize, Sequelize);
+const Cart = require("./cart")(sequelize, Sequelize);
+const CartItem = require("./cart-item")(sequelize, Sequelize);
+const Order = require("./order")(sequelize, Sequelize);
+const OrderItem = require("./order-item")(sequelize, Sequelize);
+
+// Define tables relations
+Product.belongsTo(User, {constraints: true, onDelete: "CASCADE"});
+User.hasMany(Product);
+Cart.belongsTo(User);
+User.hasOne(Cart);
+Cart.belongsToMany(Product, {through: CartItem});
+Product.belongsToMany(Cart, {through: CartItem});
+Order.belongsTo(User);
+User.hasMany(Order);
+Order.belongsToMany(Product, {through: OrderItem});
+Product.belongsToMany(Order, {through: OrderItem});
+
+db.product = Product;
+db.User = User;
+db.cart = Cart;
+db.cartItem = CartItem;
+db.order = Order;
+db.orderItem = OrderItem;
 
 module.exports = db;

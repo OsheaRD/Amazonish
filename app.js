@@ -3,6 +3,8 @@ const path = require("path");
 const express = require("express");
 const cors = require("cors");
 
+const errorController = require("./controllers/error");
+
 const app = express();
 
 // Passport configuration
@@ -23,6 +25,7 @@ app.use(
 );
 
 const user = {
+	// store this at database table user
 	id: "1",
 	email: "merchant@amazonish.com",
 	password: "password",
@@ -71,8 +74,8 @@ passport.deserializeUser((id, done) => {
 
 // Importing routes
 const mechantRoutes = require("./routes/merchant");
-// const shopRoutes = require("./routes/shop");
-const authRoutes = require("./routes/auth");
+const shopRoutes = require("./routes/shop");
+// const authRoutes = require("./routes/auth");
 
 // View engine setup
 app.set("view engine", "ejs");
@@ -82,13 +85,16 @@ app.use(express.json()); // request body has been parsed
 app.use(express.urlencoded({extended: false})); // request body has been url encoded
 app.use(express.static("./public")); // linked to css and js files
 
-app.use(mechantRoutes);
-// app.use(shopRoutes);
-app.use(authRoutes);
-
-app.get("*", (req, res, next) => {
-	res.status(404).render("404");
+const db = require("./models");
+db.sequelize.sync().then(() => {
+	console.log("Drop and re-sync db.");
 });
+
+app.use("/merchant", mechantRoutes);
+app.use(shopRoutes);
+// app.use(authRoutes);
+
+app.use("*", errorController.get404);
 
 const PORT = 3000;
 app.listen(PORT, () => {

@@ -1,11 +1,12 @@
 module.exports = (sequelize, Sequelize) => {
-	const Order = sequelize.define("order", {
+	const OrderItem = sequelize.define("orderItem", {
 		id: {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
 			allowNull: false,
 			primaryKey: true,
 		},
+		quantity: Sequelize.INTEGER,
 	});
-	return Order;
+	return OrderItem;
 };

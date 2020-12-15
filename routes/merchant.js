@@ -1,38 +1,23 @@
 const express = require("express");
 const passport = require("passport");
+const merchantController = require("../controllers/merchant");
 const router = express.Router();
 
 router.get("/", (req, res, next) => {
-	res.render("shop/index");
+	res.send("You are in the merchant mode.");
 });
 
-// router.get("/login", (req, res, next) => {});
+router.get("/products", merchantController.getProducts);
+// router.get("/products", authController.IsAuthenticated, merchantController.getProducts); // check log in before go to another route
 
-router.post("/login", (req, res, next) => {
-	passport.authenticate("local", (err, user) => {
-		if (err) {
-			return next(err);
-		}
-		if (!user) {
-			return res.send("Wrong email or password");
-		}
-		req.login(user, () => {
-			res.send("You are authenticated");
-		});
-	})(req, res, next);
-});
+router.get("/add-product", merchantController.getAddProduct);
 
-router.get("/secret", (req, res, next) => {
-	if (req.isAuthenticated()) {
-		res.send("You are authorized to see this private page");
-	} else {
-		res.status(403).send("Access denied");
-	}
-});
+router.post("/add-product", merchantController.postAddProduct);
 
-router.get("/logout", (req, res, next) => {
-	req.logout();
-	res.redirect("/");
-});
+router.get("/edit-product/:id", merchantController.getEditProduct);
+
+router.patch("/edit-product/:id", merchantController.pathEditProduct);
+
+router.delete("/edit-product/:id", merchantController.deleteEditProduct);
 
 module.exports = router;
