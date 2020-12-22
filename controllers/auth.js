@@ -1,13 +1,26 @@
-exports.IsAuthenticated = (req, res, next) => {
-	if (req.isAuthenticated()) {
-		next();
-	} else {
-		next(new Error(401));
-	}
+exports.getSignUp = (req, res, next) => {
+	res.render("shop/signup", {
+		pageTitle: "Sign Up",
+		path: "/signup",
+	});
 };
 
-exports.destroySession = (req, res, next) => {
-	req.logOut();
-	req.session.destroy();
-	res.redirect("/"); // Got to login page
+exports.getSignIn = (req, res, next) => {
+	res.render("shop/signin", {
+		pageTitle: "Sign In",
+		path: "/signin",
+	});
+};
+
+exports.getSignOut = (req, res, next) => {
+	req.session.destroy(err => {
+		res.redirect("/");
+	});
+};
+
+exports.isLoggedIn = (req, res, next) => {
+	if (req.isAuthenticated()) {
+		return next();
+	}
+	res.redirect("/signin");
 };

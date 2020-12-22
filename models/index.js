@@ -39,7 +39,7 @@ Order.belongsToMany(Product, {through: OrderItem});
 Product.belongsToMany(Order, {through: OrderItem});
 
 db.product = Product;
-db.User = User;
+db.user = User;
 db.cart = Cart;
 db.cartItem = CartItem;
 db.order = Order;
