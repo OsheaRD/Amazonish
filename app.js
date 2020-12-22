@@ -6,93 +6,70 @@ const cors = require("cors");
 const errorController = require("./controllers/error");
 
 const app = express();
-
-// Passport configuration
 const passport = require("passport");
-const LocalStrategy = require("passport-local");
-const GitHubStrategy = require("passport-github").Strategy;
 const session = require("express-session");
-const FileStore = require("session-file-store")(session);
-
-// Passport configuration - Local Strategy
-app.use(
-	session({
-		// store: new FileStore(),
-		secret: "secret",
-		resave: false,
-		saveUninitialized: true,
-	})
-);
-
-const user = {
-	// store this at database table user
-	id: "1",
-	email: "merchant@amazonish.com",
-	password: "password",
-};
-
-passport.use(
-	new LocalStrategy(
-		{
-			usernameField: "email",
-		},
-		(email, password, done) => {
-			if (email === user.email && password === user.password) {
-				return done(null, user);
-			} else {
-				return done(null, false);
-			}
-		}
-	)
-);
-
-// Passport configuration - Github Strategy
-passport.use(
-	new GitHubStrategy(
-		{
-			clientID: process.env.GITHUB_CLIENT_ID,
-			clientSecret: process.env.GITHUB_CLIENT_SECRET,
-			callbackURL: process.env.GITHUB_CALLBACK_URL,
-		},
-		function (accessToken, refreshToken, profile, cb) {
-			return cb(null, profile);
-		}
-	)
-);
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-passport.serializeUser((user, done) => {
-	done(null, user.id);
-});
-
-passport.deserializeUser((id, done) => {
-	const _user = user.id === id ? user : false;
-	done(null, _user);
-});
 
 // Importing routes
 const mechantRoutes = require("./routes/merchant");
 const shopRoutes = require("./routes/shop");
-// const authRoutes = require("./routes/auth");
+const authRoutes = require("./routes/auth");
 
 // View engine setup
 app.set("view engine", "ejs");
 app.set("views", "./views");
 
+// Express BodyParser
 app.use(express.json()); // request body has been parsed
 app.use(express.urlencoded({extended: false})); // request body has been url encoded
 app.use(express.static("./public")); // linked to css and js files
 
-const db = require("./models");
-db.sequelize.sync().then(() => {
-	console.log("Drop and re-sync db.");
-});
+// For Passport
+app.use(session({secret: "keyboard cat", resave: true, saveUninitialized: true}));
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
 
-app.use("/merchant", mechantRoutes);
+// app.use((req, res, next) => {
+// 	db.user
+// 		.findOne({where: {username: "admin"}})
+// 		.then(user => {
+// 			req.user = user; // This is sequelize object, not JavasScript object
+// 			user.createCart();
+// 			next();
+// 		})
+// 		.catch(err => console.log(err));
+// });
+
+const db = require("./models");
+
+require("./config/passport.js")(passport, db.user);
+
+db.sequelize
+	.sync()
+	.then(result => {
+		console.log("Database looks fine");
+	})
+	// .then(result => {
+	// // 	return db.user.findOne({
+	// // 		// findOrCreate
+	// // 		where: {username: "admin"},
+	// // 	});
+	// // })
+	// // .then(user => {
+	// // 	if (!user) {
+	// // 		return db.user.create({username: "admin", password: "admin"});
+	// // 	}
+	// // 	return user;
+	// // })
+	// // .then(user => {
+	// // 	return user.createCart();
+	// // })
+	.catch(err => {
+		console.log(err);
+	});
+
 app.use(shopRoutes);
-// app.use(authRoutes);
+app.use("/merchant", mechantRoutes);
+app.use(authRoutes);
 
 app.use("*", errorController.get404);
 

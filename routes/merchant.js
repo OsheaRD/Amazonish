@@ -7,7 +7,7 @@ router.get("/", (req, res, next) => {
 	res.send("You are in the merchant mode.");
 });
 
-router.get("/products", merchantController.getProducts);
+router.get("/products", merchantController.getProducts); // Shop index page after log in
 // router.get("/products", authController.IsAuthenticated, merchantController.getProducts); // check log in before go to another route
 
 router.get("/add-product", merchantController.getAddProduct);
@@ -18,6 +18,6 @@ router.get("/edit-product/:id", merchantController.getEditProduct);
 
 router.patch("/edit-product/:id", merchantController.pathEditProduct);
 
-router.delete("/edit-product/:id", merchantController.deleteEditProduct);
+router.post("/delete-product", merchantController.deleteProduct); // delete or post
 
 module.exports = router;
