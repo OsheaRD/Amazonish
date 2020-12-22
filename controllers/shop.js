@@ -4,7 +4,7 @@ const Product = db.product;
 const Op = db.Sequelize.Op;
 
 exports.getIndex = (req, res, next) => {
-	const title = req.query.title;
+	const title = req.body.search;
 	let condition = title ? {title: {[Op.iLike]: `%${title}%`}} : null;
 
 	Product.findAll({where: condition})
@@ -68,7 +68,6 @@ exports.getCart = (req, res, next) => {
 						products: products,
 					});
 				})
-				.then()
 				.catch(err => console.log(err));
 		})
 		.catch(err => console.log(err));
@@ -78,7 +77,6 @@ exports.postCart = (req, res, next) => {
 	const prodId = req.body.productId;
 	let fetchedCart;
 	let newQuantity = 1;
-	user.createCart(); // Create a cart first in here or after log in
 	req.user
 		.getCart()
 		.then(cart => {

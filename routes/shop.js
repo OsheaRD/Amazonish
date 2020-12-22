@@ -6,7 +6,7 @@ const authController = require("../controllers/auth");
 
 router.get("/", shopController.getIndex); // Shop index page before log in
 
-router.get("/products", authController.isLoggedIn, shopController.getProducts); // Shop index page after log in
+router.get("/products", authController.isLoggedIn, shopController.getProducts);
 
 router.get("/products/:productId", shopController.getProduct);
 

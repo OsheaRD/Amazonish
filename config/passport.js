@@ -98,8 +98,7 @@ module.exports = (passport, user) => {
 							});
 						}
 
-						signInUser = user; // This is sequelize object, not JavasScript object
-						// user.createCart();  Need to work this out
+						user.createCart();
 						const userinfo = user.get();
 						return done(null, userinfo);
 					})
