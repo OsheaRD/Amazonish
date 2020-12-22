@@ -4,8 +4,11 @@
     <nav class="main-header__nav">
         <ul class="main-header__item-list">
             <li class="main-header__item">
-                <input type="text" placeholder="Search for Products">
-                <button class="btn" type="submit">Search</button>
+                <form action="/" method="GET">
+                    <input type="text" name="search" placeholder="Search for Products">
+                    <button class="btn" type="submit">Search</button>
+                </form>
+
             </li>
             <li class="main-header__item">
                 <a class="<%= path === '/signin' ? 'active' : '' %>" href="/signin">Sign In</a>

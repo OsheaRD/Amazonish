@@ -28,50 +28,34 @@ app.use(session({secret: "keyboard cat", resave: true, saveUninitialized: true})
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 
-// app.use((req, res, next) => {
-// 	db.user
-// 		.findOne({where: {username: "admin"}})
-// 		.then(user => {
-// 			req.user = user; // This is sequelize object, not JavasScript object
-// 			user.createCart();
-// 			next();
-// 		})
-// 		.catch(err => console.log(err));
-// });
+app.use((req, res, next) => {
+	db.user
+		.findOne({where: {username: "admin"}})
+		.then(user => {
+			req.user = user; // This is sequelize object, not JavasScript object
+			next();
+		})
+		.catch(err => console.log(err));
+});
 
 const db = require("./models");
 
 require("./config/passport.js")(passport, db.user);
+
+app.use(authRoutes);
+app.use(shopRoutes);
+app.use("/merchant", mechantRoutes);
+
+app.use("*", errorController.get404);
 
 db.sequelize
 	.sync()
 	.then(result => {
 		console.log("Database looks fine");
 	})
-	// .then(result => {
-	// // 	return db.user.findOne({
-	// // 		// findOrCreate
-	// // 		where: {username: "admin"},
-	// // 	});
-	// // })
-	// // .then(user => {
-	// // 	if (!user) {
-	// // 		return db.user.create({username: "admin", password: "admin"});
-	// // 	}
-	// // 	return user;
-	// // })
-	// // .then(user => {
-	// // 	return user.createCart();
-	// // })
 	.catch(err => {
 		console.log(err);
 	});
-
-app.use(shopRoutes);
-app.use("/merchant", mechantRoutes);
-app.use(authRoutes);
-
-app.use("*", errorController.get404);
 
 const PORT = 3000;
 app.listen(PORT, () => {
