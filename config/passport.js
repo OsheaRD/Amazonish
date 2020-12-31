@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 module.exports = (passport, user) => {
 	const User = user;
 	const LocalStrategy = require("passport-local").Strategy;
-	const GitHubStrategy = require("passport-github").Strategy;
+	const GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
 
 	// Local Sign Up
 	passport.use(
@@ -114,17 +114,40 @@ module.exports = (passport, user) => {
 		)
 	);
 
-	// Github Sign In
+	// Use the GoogleStrategy within Passport.
+	//   Strategies in Passport require a `verify` function, which accept
+	//   credentials (in this case, an accessToken, refreshToken, and Google
+	//   profile), and invoke a callback with a user object.
 	passport.use(
-		new GitHubStrategy(
+		new GoogleStrategy(
 			{
-				clientID: process.env.GITHUB_CLIENT_ID,
-				clientSecret: process.env.GITHUB_CLIENT_SECRET,
-				callbackURL: process.env.GITHUB_CALLBACK_URL,
+				clientID: process.env.GOOGLE_CLIENT_ID,
+				clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+				callbackURL: `http://127.0.0.1:3000/auth/google/callback`,
 			},
-			function (accessToken, refreshToken, profile, cb) {
+			function (accessToken, refreshToken, profile, done) {
 				console.log(profile);
-				cb(null, profile);
+				// User.findOne({
+				// 	where: {
+				// 		email: profile.emails[0].value,
+				// 	},
+				// }).then(user => {
+				// 	if (user) {
+				// 		return done(null, false, {
+				// 			message: "User already existed",
+				// 		});
+				// 	} else {
+				// 		User.create({email: profile.emails[0].value}).then((newUser, created) => {
+				// 			if (!newUser) {
+				// 				return done(null, false);
+				// 			}
+				// 			if (newUser) {
+				// 				newUser.createCart();
+				// 				return done(null, newUser);
+				// 			}
+				// 		});
+				// 	}
+				// });
 			}
 		)
 	);

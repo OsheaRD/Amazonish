@@ -37,7 +37,7 @@ app.use("/merchant", mechantRoutes);
 app.use("*", errorController.get404);
 
 db.sequelize
-	.sync()
+	.sync({force: true})
 	.then(result => {
 		console.log("Database looks fine");
 	})

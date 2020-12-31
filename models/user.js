@@ -14,14 +14,14 @@ module.exports = (sequelize, Sequelize) => {
 		email: {
 			type: Sequelize.STRING,
 			unique: true,
-			allowNull: false,
+			// allowNull: false,
 			validate: {
 				isEmail: true,
 			},
 		},
 		password: {
 			type: Sequelize.STRING,
-			allowNull: false, // if github authentication, change it to allow null
+			allowNull: true,
 			validate: {notEmpty: true},
 		},
 	});

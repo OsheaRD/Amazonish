@@ -31,12 +31,10 @@ router.post(
 	// res.send();
 );
 
-// Github Sign In
-router.get("/auth/github", passport.authenticate("github"));
+router.get("/auth/google", passport.authenticate("google", {scope: ["profile", "email"]}));
 
-router.get("/auth/github/callback", passport.authenticate("github", {failureRedirect: "/login"}), function (req, res) {
-	// Successful authentication, redirect home.
-	res.redirect("/");
+router.get("/auth/google/callback", passport.authenticate("google", {failureRedirect: "/signin"}), function (req, res) {
+	res.redirect("/products");
 });
 
 router.get("/signout", authController.getSignOut);
