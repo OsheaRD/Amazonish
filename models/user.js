@@ -1,7 +1,4 @@
 const bcrypt = require("bcrypt");
-// const saltRounds = 10;
-// const myPlaintextPassword = 's0/\/\P4$$w0rD';
-// const someOtherPlaintextPassword = 'not_bacon';
 
 module.exports = (sequelize, Sequelize) => {
 	const User = sequelize.define("user", {
@@ -11,14 +8,13 @@ module.exports = (sequelize, Sequelize) => {
 			allowNull: false,
 			primaryKey: true,
 		},
-		username: {
-			type: Sequelize.STRING,
-			unique: true,
-			allowNull: false,
-			validate: {notNull: true, notEmpty: true},
+		role: {
+			type: Sequelize.INTEGER,
 		},
 		email: {
 			type: Sequelize.STRING,
+			unique: true,
+			allowNull: false,
 			validate: {
 				isEmail: true,
 			},

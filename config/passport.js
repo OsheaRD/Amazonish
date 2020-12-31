@@ -1,15 +1,16 @@
 const bcrypt = require("bcrypt");
-let signInUser;
 
 module.exports = (passport, user) => {
 	const User = user;
 	const LocalStrategy = require("passport-local").Strategy;
+	const GitHubStrategy = require("passport-github").Strategy;
 
+	// Local Sign Up
 	passport.use(
 		"local-signup",
 		new LocalStrategy(
 			{
-				usernameField: "username",
+				usernameField: "email",
 				passwordField: "password",
 				passReqToCallback: true, // allows us to pass back the entire request to the callback
 			},
@@ -21,7 +22,7 @@ module.exports = (passport, user) => {
 
 				User.findOne({
 					where: {
-						username: username,
+						email: username,
 					},
 				}).then(user => {
 					if (user) {
@@ -31,8 +32,8 @@ module.exports = (passport, user) => {
 					} else {
 						const userPassword = generateHash(password);
 						const data = {
-							username: username,
-							email: req.body.email,
+							// role: username === "merchant" ? "0" : "1",
+							email: username,
 							password: userPassword,
 						};
 						User.create(data).then((newUser, created) => {
@@ -58,19 +59,19 @@ module.exports = (passport, user) => {
 	passport.deserializeUser((id, done) => {
 		User.findByPk(id).then(user => {
 			if (user) {
-				done(null, user.get());
+				done(null, user); // return req.user for routes and controllers
 			} else {
 				done(user.errors, null);
 			}
 		});
 	});
 
-	// Local Signin
+	// Local Sign In
 	passport.use(
 		"local-signin",
 		new LocalStrategy(
 			{
-				usernameField: "username",
+				usernameField: "email",
 				passwordField: "password",
 				passReqToCallback: true,
 			},
@@ -83,7 +84,7 @@ module.exports = (passport, user) => {
 
 				User.findOne({
 					where: {
-						username: username,
+						email: username,
 					},
 				})
 					.then(user => {
@@ -109,6 +110,21 @@ module.exports = (passport, user) => {
 							message: "Something went wrong with your Signin",
 						});
 					});
+			}
+		)
+	);
+
+	// Github Sign In
+	passport.use(
+		new GitHubStrategy(
+			{
+				clientID: process.env.GITHUB_CLIENT_ID,
+				clientSecret: process.env.GITHUB_CLIENT_SECRET,
+				callbackURL: process.env.GITHUB_CALLBACK_URL,
+			},
+			function (accessToken, refreshToken, profile, cb) {
+				console.log(profile);
+				cb(null, profile);
 			}
 		)
 	);
