@@ -1,12 +1,22 @@
+const passport = require("passport");
+
 exports.getSignUp = (req, res, next) => {
-	res.render("shop/signup", {
+	res.render("auth/signup", {
 		pageTitle: "Sign Up",
 		path: "/signup",
 	});
 };
 
+// exports.postSignUp = (req, res, next) => {
+// 	passport.authenticate("local-signup", {
+// 		successRedirect: "/signin",
+
+// 		failureRedirect: "/signup",
+// 	});
+// };
+
 exports.getSignIn = (req, res, next) => {
-	res.render("shop/signin", {
+	res.render("auth/signin", {
 		pageTitle: "Sign In",
 		path: "/signin",
 	});

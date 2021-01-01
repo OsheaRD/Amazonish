@@ -1,22 +1,20 @@
 require("dotenv").config();
-const path = require("path");
 const express = require("express");
-const cors = require("cors");
-
-const errorController = require("./controllers/error");
 
 const app = express();
 const passport = require("passport");
 const session = require("express-session");
 
-// Importing routes
-const mechantRoutes = require("./routes/merchant");
-const shopRoutes = require("./routes/shop");
-const authRoutes = require("./routes/auth");
+const errorController = require("./controllers/error");
 
 // View engine setup
 app.set("view engine", "ejs");
 app.set("views", "./views");
+
+// Importing routes
+const mechantRoutes = require("./routes/merchant");
+const shopRoutes = require("./routes/shop");
+const authRoutes = require("./routes/auth");
 
 // Express BodyParser
 app.use(express.json()); // request body has been parsed
@@ -27,16 +25,6 @@ app.use(express.static("./public")); // linked to css and js files
 app.use(session({secret: "keyboard cat", resave: true, saveUninitialized: true}));
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
-
-app.use((req, res, next) => {
-	db.user
-		.findOne({where: {username: "admin"}})
-		.then(user => {
-			req.user = user; // This is sequelize object, not JavasScript object
-			next();
-		})
-		.catch(err => console.log(err));
-});
 
 const db = require("./models");
 
@@ -57,7 +45,7 @@ db.sequelize
 		console.log(err);
 	});
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}.`);
 });

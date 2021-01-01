@@ -6,17 +6,8 @@ exports.getProducts = (req, res, next) => {
 	const title = req.query.title;
 	let condition = title ? {title: {[Op.iLike]: `%${title}%`}} : null;
 
-	// Product.findAll({where: condition})
-	// 	.then(data => {
-	// 		res.send(data);
-	// 	})
-	// 	.catch(err => {
-	// 		res.status(500).send({
-	// 			message: err.message || "Some error occurred while retrieving products",
-	// 		});
-	// 	});
 	req.user
-		.getProducts()
+		.getProducts({where: condition})
 		.then(products => {
 			res.render("merchant/products", {
 				prods: products,
@@ -24,7 +15,11 @@ exports.getProducts = (req, res, next) => {
 				path: "/merchant/products",
 			});
 		})
-		.catch(err => console.log(err));
+		.catch(err => {
+			res.status(500).send({
+				message: err.message || "Some error occurred while retrieving products",
+			});
+		});
 };
 
 exports.getAddProduct = (req, res, next) => {
@@ -62,12 +57,14 @@ exports.postAddProduct = (req, res, next) => {
 	// 		});
 	// 	});
 	const title = req.body.title;
+	const categary = req.body.categary;
 	const imageUrl = req.body.imageUrl;
 	const price = req.body.price;
 	const description = req.body.description;
 	req.user
 		.createProduct({
 			title: title,
+			categary: categary,
 			price: price,
 			imageUrl: imageUrl,
 			description: description,
@@ -127,12 +124,14 @@ exports.pathEditProduct = (req, res, next) => {
 	// 	});
 	const prodId = req.body.productId;
 	const updatedTitle = req.body.title;
+	const updatedCategory = req.body.category;
 	const updatedImageUrl = req.body.imageUrl;
 	const updatedPrice = req.body.price;
 	const updatedDesc = req.body.description;
 	Product.findByPk(prodId)
 		.then(product => {
 			product.title = updatedTitle;
+			product.category = updatedCategory;
 			product.price = updatedPrice;
 			product.description = updatedDesc;
 			product.imageUrl = updatedImageUrl;
