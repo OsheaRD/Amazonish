@@ -7,19 +7,20 @@ exports.getSignUp = (req, res, next) => {
 	});
 };
 
-// exports.postSignUp = (req, res, next) => {
-// 	passport.authenticate("local-signup", {
-// 		successRedirect: "/signin",
-
-// 		failureRedirect: "/signup",
-// 	});
-// };
+exports.postSignUp = (req, res, next) => {
+	res.redirect("/signin");
+};
 
 exports.getSignIn = (req, res, next) => {
 	res.render("auth/signin", {
 		pageTitle: "Sign In",
 		path: "/signin",
 	});
+};
+
+exports.postSignIn = (req, res, next) => {
+	req.session.isLoggedIn = true;
+	res.redirect("/products");
 };
 
 exports.getSignOut = (req, res, next) => {

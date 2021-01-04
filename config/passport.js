@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 module.exports = (passport, user) => {
 	const User = user;
 	const LocalStrategy = require("passport-local").Strategy;
-	const GitHubStrategy = require("passport-github").Strategy;
+	const GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
 
 	// Local Sign Up
 	passport.use(
@@ -32,7 +32,6 @@ module.exports = (passport, user) => {
 					} else {
 						const userPassword = generateHash(password);
 						const data = {
-							// role: username === "merchant" ? "0" : "1",
 							email: username,
 							password: userPassword,
 						};
@@ -50,12 +49,12 @@ module.exports = (passport, user) => {
 		)
 	);
 
-	// serialize
+	// Serialize
 	passport.serializeUser((user, done) => {
 		done(null, user.id);
 	});
 
-	// deserialzie user
+	// Deserialzie user
 	passport.deserializeUser((id, done) => {
 		User.findByPk(id).then(user => {
 			if (user) {
@@ -114,17 +113,36 @@ module.exports = (passport, user) => {
 		)
 	);
 
-	// Github Sign In
+	// Google Sign In
 	passport.use(
-		new GitHubStrategy(
+		new GoogleStrategy(
 			{
-				clientID: process.env.GITHUB_CLIENT_ID,
-				clientSecret: process.env.GITHUB_CLIENT_SECRET,
-				callbackURL: process.env.GITHUB_CALLBACK_URL,
+				clientID: process.env.GOOGLE_CLIENT_ID,
+				clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+				callbackURL: `http://127.0.0.1:3000/auth/google/callback`,
 			},
-			function (accessToken, refreshToken, profile, cb) {
-				console.log(profile);
-				cb(null, profile);
+			function (accessToken, refreshToken, profile, done) {
+				// console.log(profile);
+				User.findOne({
+					where: {
+						email: profile.emails[0].value,
+					},
+				}).then(user => {
+					if (user) {
+						user.createCart();
+						return done(null, user);
+					} else {
+						User.create({email: profile.emails[0].value}).then((newUser, created) => {
+							if (!newUser) {
+								return done(null, false);
+							}
+							if (newUser) {
+								newUser.createCart();
+								return done(null, newUser);
+							}
+						});
+					}
+				});
 			}
 		)
 	);

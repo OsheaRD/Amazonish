@@ -21,7 +21,7 @@ module.exports = (sequelize, Sequelize) => {
 		},
 		password: {
 			type: Sequelize.STRING,
-			allowNull: false, // if github authentication, change it to allow null
+			allowNull: true,
 			validate: {notEmpty: true},
 		},
 	});
