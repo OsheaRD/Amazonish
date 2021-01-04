@@ -32,7 +32,6 @@ module.exports = (passport, user) => {
 					} else {
 						const userPassword = generateHash(password);
 						const data = {
-							// role: username === "merchant" ? "0" : "1",
 							email: username,
 							password: userPassword,
 						};
@@ -50,12 +49,12 @@ module.exports = (passport, user) => {
 		)
 	);
 
-	// serialize
+	// Serialize
 	passport.serializeUser((user, done) => {
 		done(null, user.id);
 	});
 
-	// deserialzie user
+	// Deserialzie user
 	passport.deserializeUser((id, done) => {
 		User.findByPk(id).then(user => {
 			if (user) {
@@ -114,10 +113,7 @@ module.exports = (passport, user) => {
 		)
 	);
 
-	// Use the GoogleStrategy within Passport.
-	//   Strategies in Passport require a `verify` function, which accept
-	//   credentials (in this case, an accessToken, refreshToken, and Google
-	//   profile), and invoke a callback with a user object.
+	// Google Sign In
 	passport.use(
 		new GoogleStrategy(
 			{
@@ -126,28 +122,27 @@ module.exports = (passport, user) => {
 				callbackURL: `http://127.0.0.1:3000/auth/google/callback`,
 			},
 			function (accessToken, refreshToken, profile, done) {
-				console.log(profile);
-				// User.findOne({
-				// 	where: {
-				// 		email: profile.emails[0].value,
-				// 	},
-				// }).then(user => {
-				// 	if (user) {
-				// 		return done(null, false, {
-				// 			message: "User already existed",
-				// 		});
-				// 	} else {
-				// 		User.create({email: profile.emails[0].value}).then((newUser, created) => {
-				// 			if (!newUser) {
-				// 				return done(null, false);
-				// 			}
-				// 			if (newUser) {
-				// 				newUser.createCart();
-				// 				return done(null, newUser);
-				// 			}
-				// 		});
-				// 	}
-				// });
+				// console.log(profile);
+				User.findOne({
+					where: {
+						email: profile.emails[0].value,
+					},
+				}).then(user => {
+					if (user) {
+						user.createCart();
+						return done(null, user);
+					} else {
+						User.create({email: profile.emails[0].value}).then((newUser, created) => {
+							if (!newUser) {
+								return done(null, false);
+							}
+							if (newUser) {
+								newUser.createCart();
+								return done(null, newUser);
+							}
+						});
+					}
+				});
 			}
 		)
 	);

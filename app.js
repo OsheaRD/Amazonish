@@ -30,6 +30,13 @@ const db = require("./models");
 
 require("./config/passport.js")(passport, db.user);
 
+// Passing local variables to Template Engine Render Pages
+app.use((req, res, next) => {
+	res.locals.isAuthenticated = req.session.isLoggedIn;
+	// res.locals.csrfToken = req.csrfToken();
+	next();
+});
+
 app.use(authRoutes);
 app.use(shopRoutes);
 app.use("/merchant", mechantRoutes);
