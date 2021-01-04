@@ -119,7 +119,7 @@ module.exports = (passport, user) => {
 			{
 				clientID: process.env.GOOGLE_CLIENT_ID,
 				clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-				callbackURL: `http://127.0.0.1:3000/auth/google/callback`,
+				callbackURL: process.env.GOOGLE_CALLBACK_URL,
 			},
 			function (accessToken, refreshToken, profile, done) {
 				// console.log(profile);
