@@ -24,4 +24,7 @@ router.get("/auth/google/callback", passport.authenticate("google", {failureRedi
 // Sign Out
 router.get("/signout", authController.getSignOut);
 
+// Reset Password
+router.get("/reset", authController.getReset);
+
 module.exports = router;
