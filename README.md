@@ -3,7 +3,7 @@
 ![Alt Text](https://media.giphy.com/media/zWyv9xtsEfXQQ/giphy.gif)
 ## Overview
 
-Amazonish is a backend developer project that mimics the functionality of an e-commerce website, specifically Amazon.
+Amazonish is a backend developer project that mimics the functionality of an e-commerce website, functions include the ability to add items to a database, edit item details, add to shopping cart and more!!!
 
 ## Screenshots
 
